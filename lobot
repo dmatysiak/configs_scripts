@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+
+import argparse
+import logging
+from subprocess import call
+import sys
+
+
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(message)s')
+ch.setFormatter(formatter)
+log.addHandler(ch)
+
+
+class Monitor:
+    MONITOR_TOOL = ['xrandr']
+    BG_TOOL = ['feh']
+
+    def __init__(self,
+                 alias,
+                 output,
+                 mode=None,
+                 panning=None,
+                 rate=None,
+                 scale=None,
+                 auto=None,
+                 background=None):
+        self.alias = alias
+        self.output = output
+        self.mode = mode
+        self.panning = panning
+        self.rate = rate
+        self.scale = scale
+        self.auto = auto
+        self.background = background
+
+    def raise_if_error(self, code):
+        if c != 0:
+            raise Exception("Command returns with error code {code}.".format(code=code))
+
+    def turn_on(self, other_monitor=None):
+        args = ['--output', self.output]
+        if self.mode:
+            args += ['--mode', self.mode]
+        if self.panning:
+            args += ['--panning', self.panning]
+        if self.rate:
+            args += ['--date', self.rate]
+        if self.scale:
+            args += ['--scale', self.scale]
+        if self.auto:
+            args += ['--auto']
+
+        log.info("Turning on {monitor}...".format(monitor=self.alias))
+        try:
+            c = call(MONITOR_TOOL + args)
+            self.raise_if_error(c)
+        except Exception as ex:
+            log.error("Failed to turn on {monitor}: {ex}".format(monitor=self.alias,
+                                                                 ex=str(ex)))
+        else:
+            self.set_bg()
+            other_monitor.turn_off()
+
+    def turn_off(self, other_monitor=None):
+        log.info("Turning off {monitor}...".format(monitor=self.alias))
+        try:
+            call(MONITOR_TOOL + ['--output', self.output, '--off'])
+            self.raise_if_error(c)
+        except Exception as ex:
+            log.error("Failed to turn off {monitor}: {ex}".format(monitor=self.alias,
+                                                                  ex=str(ex)))
+        else:
+            other_monitor.turn_on()
+            self.set_bg()
+
+    def set_bg(self, path=None):
+        log.info("Setting background on {monitor}...".format(monitor=self.alias))
+        try:
+            if path:
+                call([BG_TOOL, "--bg-scale", path])
+                self.raise_if_error(c)
+            elif self.path:
+                call([BG_TOOL, "--bg-scale", self.path])
+                self.raise_if_error(c)
+        except Exception as ex:
+            log.error("Failed to set background {monitor}: {ex}".format(monitor=self.alias,
+                                                                        ex=str(ex)))
+
+
+if __name__ == '__main__':
+    #
+    # Settings
+    #
+    BACKGROUND_PATH = '/home/daniel/Pictures/Sierra.jpg'
+
+    EXTERNAL_MONITOR = Monitor('External 27" Dell Monitor',
+                               output='DP-1',
+                               mode=(3840, 1260),
+                               panning=(4800, 2700),
+                               rate=60.0,
+                               scale=(1.25, 1.25))
+
+    INTERNAL_MONITOR = Monitor('Notebook Monitor',
+                               output='eDP-1',
+                               auto=True)
+
+    MONITORS = {EXTERNAL_MONITOR.output: EXTERNAL_MONITOR,
+                INTERNAL_MONITOR.output: INTERNAL_MONITOR}
+
+    #
+    # Parse args
+    #
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-s', '--set-bg',
+                       nargs='*',
+                       metavar=('PATH', 'PATH'),
+                       help='set/reset the background')
+    group.add_argument('-m', '--monitor',
+                       nargs=2,
+                       metavar=('OUTPUT', '{on/off}'),
+                       help='enable/disable monitor settings')
+    args = parser.parse_args()
+    print(args)
