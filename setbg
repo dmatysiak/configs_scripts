@@ -1,5 +1,5 @@
 #!/bin/sh
 
-BG_PATH="/home/daniel/Pictures/Sierra.jpg"
+BG_PATH="/home/daniel/Pictures/wallpapers/Sierra.jpg"
 
 feh --bg-scale ${BG_PATH} &
