@@ -1,0 +1,3 @@
+#!/bin/sh
+
+surf -e `xwininfo -root -children|grep tabbed|cut -d' ' -f6` -z 2

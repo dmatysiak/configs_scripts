@@ -26,7 +26,7 @@ xF86AudioRaiseVolume = (0, 0x1008FF13)
 xF86AudioPrev        = (0, 0x1008FF16)
 xF86AudioNext        = (0, 0x1008FF17)
 xF86AudioPlay        = (0, 0x1008FF14)
-terminalLaunch       = (mod4Mask, 0x79) 
+terminalLaunch       = (mod4Mask, 0x79)
 
 --
 -- Layouts
