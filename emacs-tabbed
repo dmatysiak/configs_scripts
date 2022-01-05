@@ -1,0 +1,3 @@
+#!/bin/sh
+
+emacs --parent-id `xwininfo -root -children|grep tabbed|cut -d' ' -f6`
