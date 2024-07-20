@@ -165,12 +165,6 @@
 (use-package fsharp-mode :ensure t)
 (use-package bazel :ensure t)
 (use-package fish-mode :ensure t)
-(use-package dune-format :ensure t)
-(use-package merlin :ensure t)
-(use-package merlin-eldoc :ensure t)
-(use-package ocamlformat :ensure t)
-(use-package tuareg :ensure t)
-(use-package utop :ensure t)
 (use-package markdown-mode :ensure t)
 (use-package lean-mode :ensure t)
 (use-package csv-mode :ensure t)
@@ -179,6 +173,7 @@
 (use-package lsp-treemacs :ensure t)
 (use-package lsp-ui :ensure t)
 (use-package yasnippet :ensure t)
+(use-package babashka :ensure t)
 
 ;;
 ;; Language support
@@ -226,7 +221,45 @@
 ;;   (clojure-mode . highlight-sexp-mode)
 ;;   (lisp-mode . highlight-sexp-mode)
 ;;   (emacs-lisp-mode . highlight-sexp-mode))
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 
+(use-package dune :ensure t)
+(use-package dune-format :ensure t)
+(use-package ocamlformat :ensure t)
+(use-package utop :ensure t)
+
+(use-package tuareg
+  :ensure t
+  :mode (("\\.ocamlinit\\'" . tuareg-mode)))
+
+(use-package merlin
+  :ensure t
+  ;;:init
+  ;;;; we're using flycheck instead
+  ;;(setq merlin-error-after-save nil)
+  :hook
+  (tuareg-mode . merlin-mode)
+  (merlin-mode . company-mode))
+
+(use-package merlin-eldoc
+  :ensure t
+  :hook
+  (tuareg-mode . merlin-eldoc-setup))
+
+(use-package lsp-haskell :ensure t)
+(use-package haskell-mode
+  :ensure t
+  :hook
+  (haskell-mode . lsp)
+  (haskell-literate-mode . lsp))
+
+(use-package utop
+  :ensure t
+  :init
+  (setq utop-command "opam exec -- utop -emacs")
+  ;;(setq utop-command "opam exec -- dune utop . -- -emacs")
+  :hook
+  (tuareg-mode . utop-minor-mode))
 
 (use-package dockerfile-mode :ensure t)
 (use-package vlf :ensure t)
@@ -282,10 +315,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
+   '(babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line-inactive ((t (:foreground "#6c7b8b" :box (:line-width (5 . 1) :color "dark cyan" :style released-button) :weight medium :height 0.9)))))
+ )
