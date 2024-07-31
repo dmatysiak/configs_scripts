@@ -213,7 +213,13 @@
 
 (use-package adoc-mode
   :ensure t
-  :mode ("\\.adoc\\'" . adoc-mode))
+  :mode ("\\.adoc\\'" . adoc-mode)
+  :custom-face
+  (adoc-title-0-face ((t (:height 1.0 :weight bold))))
+  (adoc-title-1-face ((t (:height 1.0 :weight bold))))
+  (adoc-title-2-face ((t (:height 1.0 :weight bold))))
+  (adoc-title-3-face ((t (:height 1.0 :weight bold))))
+  (adoc-title-4-face ((t (:height 1.0 :weight bold)))))
 
 ;; (use-package highlight-sexp
 ;;   :ensure t
