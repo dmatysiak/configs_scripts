@@ -57,6 +57,7 @@
 (scroll-bar-mode -1)
 (global-set-key (kbd "<home>") 'beginning-of-line)
 (global-set-key (kbd "<end>") 'end-of-line)
+(global-hl-line-mode 1)
 
 ;;
 ;; Mouse and scrolling
