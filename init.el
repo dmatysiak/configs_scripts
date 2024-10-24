@@ -31,6 +31,7 @@
 (setq column-number-mode t)
 (windmove-default-keybindings)
 (global-auto-revert-mode 1)
+(global-display-line-numbers-mode)
 ;;(global-undo-tree-mode)
 ;;(helm-cider-mode 1)
 
