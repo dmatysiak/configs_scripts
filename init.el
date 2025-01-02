@@ -231,7 +231,10 @@
 ;;   (emacs-lisp-mode . highlight-sexp-mode))
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 
-(use-package dune :ensure t)
+(use-package dune
+  :ensure t
+  :hook
+  (dune-mode . turn-on-paredit))
 (use-package dune-format :ensure t)
 (use-package ocamlformat :ensure t)
 (use-package utop :ensure t)
