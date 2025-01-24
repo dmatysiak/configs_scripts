@@ -16,7 +16,7 @@
   (normal-top-level-add-subdirs-to-load-path)
   (add-to-list 'load-path "~/.emacs.d/lisp/"))
 (setq custom-theme-directory "~/.emacs.d/themes")
-(setq exec-path (append exec-path '("/Users/dmatysiak/bin" "/usr/local/bin")))
+(setq exec-path (append exec-path '("/Users/dmatysiak/bin" "/usr/local/bin" "/Users/dmatysiak/.ghcup/bin")))
 
 ;;
 ;; File versioning
@@ -213,6 +213,11 @@
   (clojurescript-mode . lsp)
   (clojurec-mode . lsp))
 
+(use-package direnv
+  :ensure t
+  :config
+  (direnv-mode))
+
 (use-package adoc-mode
   :ensure t
   :mode ("\\.adoc\\'" . adoc-mode)
@@ -326,7 +331,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
+   '(dired-sidebar ibuffer-sidebar babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
