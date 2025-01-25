@@ -16,7 +16,10 @@
   (normal-top-level-add-subdirs-to-load-path)
   (add-to-list 'load-path "~/.emacs.d/lisp/"))
 (setq custom-theme-directory "~/.emacs.d/themes")
-(setq exec-path (append exec-path '("/Users/dmatysiak/bin" "/usr/local/bin" "/Users/dmatysiak/.ghcup/bin")))
+(setq exec-path (append exec-path
+                        '("/Users/dmatysiak/bin"
+                          "/usr/local/bin"
+                          "/Users/dmatysiak/.ghcup/bin")))
 
 ;;
 ;; File versioning
@@ -261,6 +264,20 @@
   :ensure t
   :hook
   (tuareg-mode . merlin-eldoc-setup))
+
+;; (use-package eglot
+;;   :ensure t
+;;   :config
+;;   (add-hook 'haskell-mode-hook 'eglot-ensure)
+;;   :config
+;;   (setq-default eglot-workspace-configuration
+;;                 '((haskell
+;;                    (plugin
+;;                     (stan
+;;                      (globalOn . :json-false))))))
+;;   :custom
+;;   (eglot-autoshutdown t)
+;;   (eglot-confirm-server-initiated-edits nil))
 
 (use-package lsp-haskell :ensure t)
 (use-package haskell-mode
