@@ -25,6 +25,12 @@
 ;; File versioning
 ;;
 (setq backup-by-copying t)   ; don't clobber symlinks
+(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+
 (setq version-control t)     ; use versioned backups
 (setq delete-old-versions t)
 (setq kept-new-versions 2)
@@ -348,7 +354,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(dired-sidebar ibuffer-sidebar babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
+   '(direnv babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -358,3 +364,4 @@
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+(put 'downcase-region 'disabled nil)
