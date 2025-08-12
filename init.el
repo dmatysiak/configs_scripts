@@ -93,6 +93,10 @@
 ;;
 ;; Tools
 ;;
+(use-package emacs
+  :bind (("C-c c r" . comment-region)
+         ("C-c c u" . uncomment-region)))
+
 (use-package magit
   :ensure t
   :bind ("M-g" . magit-status))
@@ -197,7 +201,9 @@
   (load "atl-mode.el")
   (setq atl-lsp-jar "/Users/dmatysiak/apps/atl-lsp.jar")
   ;;(setq atl-lsp-args '("--project-file" "/Users/dmatysiak/repos/2-atl/atl-lsp/dev-resources/test/interactions/find-project-file-fails/other.edn"))
-  (add-to-list 'auto-mode-alist '("\\.atl\\'" . atl-mode)))
+  (add-to-list 'auto-mode-alist '("\\.atl\\'" . atl-mode))
+  :bind (:map lsp-mode-map
+              ("C-c l a" . lsp-execute-code-action)))
 
 (use-package antlr-mode
   :ensure t
@@ -279,14 +285,11 @@
 
 ;; (use-package eglot
 ;;   :ensure t
-;;   :config
-;;   (add-hook 'haskell-mode-hook 'eglot-ensure)
+;;   :hook (haskell-mode . eglot-ensure)
 ;;   :config
 ;;   (setq-default eglot-workspace-configuration
-;;                 '((haskell
-;;                    (plugin
-;;                     (stan
-;;                      (globalOn . :json-false))))))
+;;                 '(:haskell (:plugin (:stan (:globalOn t))
+;;                                     :formattingProvider "ormolu")))
 ;;   :custom
 ;;   (eglot-autoshutdown t)
 ;;   (eglot-confirm-server-initiated-edits nil))
@@ -360,7 +363,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(nix-mode direnv babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode)))
+   '(eglot-booster chatgpt-shell copilot nix-mode direnv babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode))
+ '(package-vc-selected-packages
+   '((eglot-booster :vc-backend Git :url "https://github.com/jdtsmith/eglot-booster"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
