@@ -5,6 +5,7 @@
 ;; Package archives
 ;;
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 ;;(package-initialize)
@@ -12,9 +13,11 @@
 ;;
 ;; Loads paths, exec paths, etc.
 ;;
-(let ((default-directory  "~/.emacs.d/lisp/"))
-  (normal-top-level-add-subdirs-to-load-path)
-  (add-to-list 'load-path "~/.emacs.d/lisp/"))
+(let* ((base-emacs-dir "~/.emacs.d/")
+       (default-directory (concat base-emacs-dir "lisp")))
+  (add-to-list 'load-path default-directory)
+  (add-to-list 'load-path (concat base-emacs-dir "lean4-mode"))
+  (normal-top-level-add-subdirs-to-load-path))
 (setq custom-theme-directory "~/.emacs.d/themes")
 (setq exec-path (append exec-path
                         '("/Users/dmatysiak/bin"
@@ -35,6 +38,8 @@
 (setq delete-old-versions t)
 (setq kept-new-versions 2)
 (setq kept-old-versions 2)
+
+(setq magit-list-refs-sortby "-creatordate")
 
 (setq inhibit-startup-message t)
 (setq column-number-mode t)
@@ -70,6 +75,10 @@
 (global-set-key (kbd "<end>") 'end-of-line)
 ;;(global-set-key (kbd "C-d) 'top-level)
 (global-hl-line-mode 1)
+(global-set-key (kbd "C-x C-+") 'global-text-scale-adjust)
+;;(global-set-key (kbd "C-x C-+") 'global-text-scale-increase)
+;;(global-set-key (kbd "C-x C--") 'global-text-scale-decrease)
+(global-set-key (kbd "C-c SPC") 'copilot-accept-completion)
 
 ;;
 ;; Mouse and scrolling
@@ -183,7 +192,6 @@
 (use-package bazel :ensure t)
 (use-package fish-mode :ensure t)
 (use-package markdown-mode :ensure t)
-(use-package lean-mode :ensure t)
 (use-package csv-mode :ensure t)
 (use-package ediprolog :ensure t)
 (use-package flycheck-ocaml :ensure t)
@@ -195,15 +203,10 @@
 ;;
 ;; Language support
 ;;
-(use-package lsp-mode
+(use-package lean-mode
   :ensure t
   :config
-  (load "atl-mode.el")
-  (setq atl-lsp-jar "/Users/dmatysiak/apps/atl-lsp.jar")
-  ;;(setq atl-lsp-args '("--project-file" "/Users/dmatysiak/repos/2-atl/atl-lsp/dev-resources/test/interactions/find-project-file-fails/other.edn"))
-  (add-to-list 'auto-mode-alist '("\\.atl\\'" . atl-mode))
-  :bind (:map lsp-mode-map
-              ("C-c l a" . lsp-execute-code-action)))
+  (require 'lean4-mode))
 
 (use-package antlr-mode
   :ensure t
@@ -294,12 +297,36 @@
 ;;   (eglot-autoshutdown t)
 ;;   (eglot-confirm-server-initiated-edits nil))
 
-(use-package lsp-haskell :ensure t)
+;;(setq lsp-haskell-server-path "~/.ghcup/bin/haskell-language-server-9.8.4")
+(setq lsp-modeline-code-actions-enable t)
+(setq lsp-ui-sideline-show-code-actions t)
+;;(setq lsp-diagnostic-clean-after-change nil)
+(setq lsp-diagnostics-provider :flycheck)
+
+(use-package lsp-haskell
+  :ensure t
+  :config
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-position 'at-point)
+  :bind (:map haskell-mode-map
+              ("M-." . lsp-find-definition)))
+
 (use-package haskell-mode
   :ensure t
   :hook
   (haskell-mode . lsp)
-  (haskell-literate-mode . lsp))
+  (haskell-literate-mode . lsp)
+  :bind (:map haskell-mode-map
+              ("M-." . lsp-find-definition)
+              ("C-t" . lsp-describe-thing-at-point)
+              ("C-c c n" . flycheck-next-error)
+              ("C-c c p" . flycheck-previous-error)))
+
+(use-package flycheck-haskell
+  :ensure t
+  :bind (:map haskell-mode-map
+              ("C-c c n" . flycheck-next-error)
+              ("C-c c p" . flycheck-previous-error)))
 
 (use-package utop
   :ensure t
@@ -315,6 +342,30 @@
 (use-package jira-markup-mode
   :ensure t
   :mode ("\\.jira\\'" . jira-markup-mode))
+
+(use-package dash
+  :ensure t)
+
+(use-package magit-section
+  :ensure t)
+
+(use-package lsp-mode
+  :ensure t
+  :config
+  (load "atl-mode.el")
+  (setq atl-lsp-jar "/Users/dmatysiak/apps/atl-lsp.jar")
+  ;;(setq atl-lsp-args '("--project-file" "/Users/dmatysiak/repos/2-atl/atl-lsp/dev-resources/test/interactions/find-project-file-fails/other.edn"))
+  (add-to-list 'auto-mode-alist '("\\.atl\\'" . atl-mode))
+  ;; Type/doc display
+  (defun my/show-type-minibuffer ()
+    "Show type information in minibuffer immediately"
+    (interactive)
+    (when (bound-and-true-p lsp-mode)
+      (eldoc-print-current-symbol-info)))
+  :bind ("C-c l a" . lsp-execute-code-action)
+  :bind ("M-." . lsp-find-definition)
+  :bind ("M-?" . lsp-find-references)
+  :bind ("C-t" . lsp-describe-thing-at-point))
 
 ;;
 ;; Themes
@@ -363,7 +414,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(eglot-booster chatgpt-shell copilot nix-mode direnv babashka merlin-mode caml-mode lsp-haskell pulsing-cursor chess gnugo vlf-setup emacs-lisp-mode rainbow-identifiers rainbow-delimiters rainbow-blocks org-bullets org-mode yasnippet lsp-treemacs flycheck-ocaml ediprolog csv-mode lean-mode markdown-mode utop tuareg ocamlformat merlin-eldoc merlin dune-format fish-mode bazel fsharp-mode go-mode toml yaml-mode auto-complete ac-cider company olivetti treemacs ag edbi elfeed w3 counsel-jq vlf request kaocha-runner jvm-mode async-status centered-cursor-mode undo-tree helm-etags-plus helm-projectile helm-org-rifle helm-org helm-cider helm-ag helm projectile sayid restclient paredit magit jira-markup-mode haki-theme f adoc-mode))
+   '(adoc-mode ag async-status auto-complete babashka bazel birds-of-paradise-plus-theme
+               blackboard-theme centered-cursor-mode chatgpt-shell chess
+               color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow company
+               copilot counsel-jq csv-mode dhall-mode dired-sidebar direnv dockerfile-mode
+               doom-themes dune dune-format edbi ediprolog edn eglot-booster elfeed
+               fish-mode flycheck-haskell flycheck-ocaml fsharp-mode gnugo go-mode
+               green-is-the-new-black-theme green-screen-theme gruvbox-theme haki-theme
+               helm-ag helm-cider helm-org helm-org-rifle helm-projectile ibuffer-sidebar
+               jira-markup-mode jvm-mode kaocha-runner lean-mode lean4-mode lsp-haskell
+               lsp-treemacs lsp-ui magit merlin-eldoc night-owl-theme nix-mode
+               nix-modeline ocamlformat olivetti org-bullets overcast-theme paredit
+               plan9-theme rainbow-blocks rainbow-delimiters rainbow-identifiers request
+               restclient sayid solarized-theme toml tron-legacy-theme undo-tree utop vlf
+               yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :vc-backend Git :url "https://github.com/jdtsmith/eglot-booster"))))
 (custom-set-faces
