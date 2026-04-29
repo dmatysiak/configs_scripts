@@ -6,8 +6,8 @@
 ;;
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 ;;(package-initialize)
 
 ;;
@@ -46,6 +46,7 @@
 (windmove-default-keybindings)
 (global-auto-revert-mode 1)
 (global-display-line-numbers-mode)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
 ;;(global-undo-tree-mode)
 ;;(helm-cider-mode 1)
 
@@ -73,7 +74,7 @@
 (scroll-bar-mode -1)
 (global-set-key (kbd "<home>") 'beginning-of-line)
 (global-set-key (kbd "<end>") 'end-of-line)
-;;(global-set-key (kbd "C-d) 'top-level)
+;;(global-set-key (kbd "C-d") 'top-level)
 (global-hl-line-mode 1)
 (global-set-key (kbd "C-x C-+") 'global-text-scale-adjust)
 ;;(global-set-key (kbd "C-x C-+") 'global-text-scale-increase)
@@ -96,7 +97,6 @@
 ;; Before save hooks
 ;;
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'before-save-hook 'font-lock-fontify-buffer)
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;;
@@ -105,6 +105,16 @@
 (use-package emacs
   :bind (("C-c c r" . comment-region)
          ("C-c c u" . uncomment-region)))
+
+;;;;;;;;;
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode t))
+
+(use-package flycheck-inline
+  :ensure t
+  :hook (flycheck-mode . flycheck-inline-mode))
 
 (use-package magit
   :ensure t
@@ -153,7 +163,7 @@
   :hook
   (org-mode . toggle-word-wrap)
   (org-mode . org-indent-mode)
-  (org-maode . (lambda () (org-bullets-mode 1))))
+  (org-mode . (lambda () (org-bullets-mode 1))))
 
 (use-package company
   :ensure t
@@ -169,11 +179,6 @@
   (setq cider-stacktrace-default-filters '(project))
   (setq cider-repl-display-help-banner nil)
   (setq cider-enrich-classpath nil)
-  :config
-  (setq cider-repl-display-in-current-window t)
-  (setq cider-repl-use-content-types nil)
-  (setq cider-stacktrace-default-filters '(project))
-  (setq cider-repl-display-help-banner nil)
   :hook
   (cider-repl-mode . company-mode)
   (cider-mode . company-mode)
@@ -237,10 +242,14 @@
   :ensure t
   :mode ("\\.nix\\'" . nix-mode))
 
-(use-package direnv
+;; (use-package direnv
+;;   :ensure t
+;;   :config
+;;   (direnv-mode))
+
+(use-package envrc
   :ensure t
-  :config
-  (direnv-mode))
+  :hook (after-init . envrc-global-mode))
 
 (use-package adoc-mode
   :ensure t
@@ -258,16 +267,12 @@
 ;;   (clojure-mode . highlight-sexp-mode)
 ;;   (lisp-mode . highlight-sexp-mode)
 ;;   (emacs-lisp-mode . highlight-sexp-mode))
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-
 (use-package dune
   :ensure t
   :hook
   (dune-mode . turn-on-paredit))
 (use-package dune-format :ensure t)
 (use-package ocamlformat :ensure t)
-(use-package utop :ensure t)
-
 (use-package tuareg
   :ensure t
   :mode (("\\.ocamlinit\\'" . tuareg-mode)))
@@ -297,10 +302,12 @@
 ;;   (eglot-autoshutdown t)
 ;;   (eglot-confirm-server-initiated-edits nil))
 
-;;(setq lsp-haskell-server-path "~/.ghcup/bin/haskell-language-server-9.8.4")
+(setq lsp-haskell-server-path "~/.ghcup/bin/haskell-language-server-wrapper")
+;;(setq lsp-inlay-hint-enable t)
 (setq lsp-modeline-code-actions-enable t)
-(setq lsp-ui-sideline-show-code-actions t)
-;;(setq lsp-diagnostic-clean-after-change nil)
+;;(setq lsp-log-io t)
+;; (setq lsp-ui-sideline-show-code-actions t)
+;; (setq lsp-diagnostic-clean-after-change nil)
 (setq lsp-diagnostics-provider :flycheck)
 
 (use-package lsp-haskell
@@ -377,7 +384,7 @@
   (haki-highlight ((t (:background "#fafad2" :foreground "#000000"))))
   :config
   (load-theme 'haki t)
-  (set-frame-font "Iosevka Term Slab 14" nil t)
+  (set-frame-font "Iosevka Term Slab 16" nil t)
   (set-face-attribute 'mode-line-inactive nil
                       :foreground "#6c7b8b"
                       :box '(:line-width (5 . 1) :color "dark cyan" :style released-button)
@@ -417,17 +424,18 @@
    '(adoc-mode ag async-status auto-complete babashka bazel birds-of-paradise-plus-theme
                blackboard-theme centered-cursor-mode chatgpt-shell chess
                color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow company
-               copilot counsel-jq csv-mode dhall-mode dired-sidebar direnv dockerfile-mode
-               doom-themes dune dune-format edbi ediprolog edn eglot-booster elfeed
-               fish-mode flycheck-haskell flycheck-ocaml fsharp-mode gnugo go-mode
-               green-is-the-new-black-theme green-screen-theme gruvbox-theme haki-theme
-               helm-ag helm-cider helm-org helm-org-rifle helm-projectile ibuffer-sidebar
-               jira-markup-mode jvm-mode kaocha-runner lean-mode lean4-mode lsp-haskell
-               lsp-treemacs lsp-ui magit merlin-eldoc night-owl-theme nix-mode
-               nix-modeline ocamlformat olivetti org-bullets overcast-theme paredit
-               plan9-theme rainbow-blocks rainbow-delimiters rainbow-identifiers request
-               restclient sayid solarized-theme toml tron-legacy-theme undo-tree utop vlf
-               yaml-mode yasnippet))
+               copilot copilot-chat counsel-jq csv-mode dhall-mode dired-sidebar direnv
+               dockerfile-mode doom-themes dune dune-format edbi ediprolog edn
+               eglot-booster elfeed envrc fish-mode flycheck-haskell flycheck-inline
+               flycheck-ocaml fsharp-mode gnugo go-mode green-is-the-new-black-theme
+               green-screen-theme gruvbox-theme haki-theme helm-ag helm-cider helm-org
+               helm-org-rifle helm-projectile ibuffer-sidebar jira-markup-mode jvm-mode
+               kaocha-runner lean-mode lean4-mode lsp-haskell lsp-treemacs lsp-ui magit
+               merlin-eldoc night-owl-theme nix-mode nix-modeline ocamlformat olivetti
+               org-bullets overcast-theme paredit plan9-theme rainbow-blocks
+               rainbow-delimiters rainbow-identifiers request restclient sayid
+               solarized-theme toml tron-legacy-theme undo-tree utop vlf yaml-mode
+               yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :vc-backend Git :url "https://github.com/jdtsmith/eglot-booster"))))
 (custom-set-faces
