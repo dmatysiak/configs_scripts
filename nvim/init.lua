@@ -11,11 +11,37 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Editor settings
+vim.opt.number = true
+vim.opt.relativenumber = true
+
+-- Focus-toggle line numbers: relative in focused normal mode, absolute otherwise
+local number_toggle = vim.api.nvim_create_augroup("NumberToggle", { clear = true })
+vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "WinEnter" }, {
+  group = number_toggle,
+  callback = function()
+    if vim.wo.number then
+      vim.wo.relativenumber = true
+    end
+  end,
+})
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "WinLeave" }, {
+  group = number_toggle,
+  callback = function()
+    if vim.wo.number then
+      vim.wo.relativenumber = false
+    end
+  end,
+})
+
+vim.opt.wildmode = "longest:full,full"
+vim.opt.wildoptions = "pum"
+vim.opt.clipboard = "unnamedplus"
 vim.opt.shortmess:append("I")
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
+vim.opt.textwidth = 90
 
 -- Haskell Language Server (built-in LSP config)
 vim.lsp.config.hls = {
@@ -46,6 +72,20 @@ vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagn
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics to loclist" })
+
+-- User command to restart LSP clients for the current buffer
+vim.api.nvim_create_user_command("DmLspRestart", function()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients == 0 then
+    vim.notify("No LSP clients attached to current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  vim.lsp.stop_client(clients)
+  vim.cmd("edit")
+end, {
+  desc = "Restart LSP for current buffer",
+})
 
 -- LSP keybindings and code lens (attached per-buffer when a language server starts)
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -172,12 +212,15 @@ require("lazy").setup({
   },
   {
     "kentookura/forester.nvim",
-    event = "VeryLazy",
+    ft = "forester",
     dependencies = {
       "nvim-telescope/telescope.nvim",
       "nvim-treesitter/nvim-treesitter",
       "nvim-lua/plenary.nvim",
     },
+    init = function()
+      vim.filetype.add({ extension = { tree = "forester" } })
+    end,
     config = function()
       require("forester").setup()
     end,

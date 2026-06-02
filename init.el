@@ -80,6 +80,8 @@
 ;;(global-set-key (kbd "C-x C-+") 'global-text-scale-increase)
 ;;(global-set-key (kbd "C-x C--") 'global-text-scale-decrease)
 (global-set-key (kbd "C-c SPC") 'copilot-accept-completion)
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-z"))
 
 ;;
 ;; Mouse and scrolling
