@@ -14,6 +14,9 @@ vim.opt.rtp:prepend(lazypath)
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- Filetype detection for ATL files (syntax in syntax/atl.vim)
+vim.filetype.add({ extension = { atl = "atl" } })
+
 -- Focus-toggle line numbers: relative in focused normal mode, absolute otherwise
 local number_toggle = vim.api.nvim_create_augroup("NumberToggle", { clear = true })
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "WinEnter" }, {
