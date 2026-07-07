@@ -148,6 +148,32 @@ require("lazy").setup({
     ft = { "clojure", "edn" },
   },
   {
+    "julienvincent/nvim-paredit",
+    ft = { "clojure", "edn", "fennel", "scheme", "lisp" },
+    config = function()
+      local paredit = require("nvim-paredit")
+      paredit.setup({
+        keys = {
+          ["<localleader>w"] = {
+            function() paredit.api.wrap_element_under_cursor("(", ")") end,
+            "Wrap element in ( )",
+          },
+          ["<localleader>W"] = {
+            function() paredit.api.wrap_enclosing_form_under_cursor("(", ")") end,
+            "Wrap enclosing form in ( )",
+          },
+        },
+      })
+    end,
+  },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = function()
+      require("nvim-autopairs").setup({})
+    end,
+  },
+  {
     "Julian/lean.nvim",
     event = { "BufReadPre *.lean", "BufNewFile *.lean" },
     dependencies = {
