@@ -70,6 +70,30 @@ vim.lsp.config.ocamllsp = {
 }
 vim.lsp.enable("ocamllsp")
 
+-- Elixir Language Server (built-in LSP config)
+vim.lsp.config.elixirls = {
+  cmd = { "elixir-ls" },
+  filetypes = { "elixir", "eelixir", "heex", "surface" },
+  root_markers = { "mix.exs", ".git" },
+}
+vim.lsp.enable("elixirls")
+
+-- Erlang Language Server (built-in LSP config)
+vim.lsp.config.erlangls = {
+  cmd = { "erlang_ls" },
+  filetypes = { "erlang" },
+  root_markers = { "rebar.config", "erlang.mk", ".git" },
+}
+vim.lsp.enable("erlangls")
+
+-- Gleam Language Server (built-in, ships with the gleam binary)
+vim.lsp.config.gleam = {
+  cmd = { "gleam", "lsp" },
+  filetypes = { "gleam" },
+  root_markers = { "gleam.toml", ".git" },
+}
+vim.lsp.enable("gleam")
+
 -- Diagnostic keybindings (global, not LSP-dependent)
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
@@ -260,7 +284,7 @@ require("lazy").setup({
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "haskell", "clojure", "ocaml", "latex" },
+        ensure_installed = { "haskell", "clojure", "ocaml", "latex", "elixir", "eex", "heex", "erlang", "gleam" },
         highlight = { enable = true, disable = { "org" } },
         indent = { enable = true },
       })
