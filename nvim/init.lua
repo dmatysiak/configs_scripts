@@ -17,6 +17,9 @@ vim.opt.relativenumber = true
 -- Filetype detection for ATL files (syntax in syntax/atl.vim)
 vim.filetype.add({ extension = { atl = "atl" } })
 
+-- Filetype detection for Quint files (syntax in syntax/quint.vim)
+vim.filetype.add({ extension = { qnt = "quint" } })
+
 -- Focus-toggle line numbers: relative in focused normal mode, absolute otherwise
 local number_toggle = vim.api.nvim_create_augroup("NumberToggle", { clear = true })
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "WinEnter" }, {
@@ -93,6 +96,14 @@ vim.lsp.config.gleam = {
   root_markers = { "gleam.toml", ".git" },
 }
 vim.lsp.enable("gleam")
+
+-- Quint Language Server (npm: @informalsystems/quint-language-server)
+vim.lsp.config.quint = {
+  cmd = { "quint-language-server", "--stdio" },
+  filetypes = { "quint" },
+  root_markers = { ".git" },
+}
+vim.lsp.enable("quint")
 
 -- Diagnostic keybindings (global, not LSP-dependent)
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic" })
